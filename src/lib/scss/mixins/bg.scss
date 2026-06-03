@@ -1,0 +1,11 @@
+@mixin page-gradient {
+  background: linear-gradient(180deg, #221E2A 0%, #30293C 100%);
+}
+
+@mixin section-start {
+  background: linear-gradient(180deg, #1A1721 0%, rgba(26, 23, 33, 0.2) 100%);
+}
+
+@mixin navigation {
+  background-color: #1A1721;
+}

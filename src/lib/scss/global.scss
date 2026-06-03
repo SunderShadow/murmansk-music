@@ -1,0 +1,38 @@
+@forward "fonts";
+@forward "env";
+
+html, body {
+  padding: 0;
+  margin: 0;
+}
+
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+:root {
+  -webkit-tap-highlight-color: transparent;
+  font-family: Oswald, sans-serif;
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+
+  svg {
+    *[fill] {
+      fill: var(--color-link);
+    }
+    *[stroke] {
+      stroke: var(--color-link);
+    }
+  }
+}
+
+h2 {
+  font-size: 20px;
+}
+
+.page-container {
+  padding: 0 12px;
+}

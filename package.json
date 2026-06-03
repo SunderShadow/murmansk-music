@@ -1,0 +1,41 @@
+{
+	"name": "murmansk-music",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"storybook": "storybook dev -p 6006",
+		"build-storybook": "storybook build"
+	},
+	"devDependencies": {
+		"@chromatic-com/storybook": "^5.2.1",
+		"@inlang/paraglide-js": "^2.15.2",
+		"@storybook/addon-a11y": "10.4.1",
+		"@storybook/addon-docs": "10.4.1",
+		"@storybook/addon-svelte-csf": "^5.1.2",
+		"@storybook/addon-vitest": "10.4.1",
+		"@storybook/sveltekit": "10.4.1",
+		"@sveltejs/adapter-auto": "^7.0.1",
+		"@sveltejs/kit": "^2.57.0",
+		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"@types/node": "^22",
+		"@vitest/browser-playwright": "^4.1.8",
+		"@vitest/coverage-v8": "^4.1.8",
+		"playwright": "^1.60.0",
+		"storybook": "10.4.1",
+		"svelte": "^5.55.2",
+		"svelte-check": "^4.4.6",
+		"typescript": "^6.0.2",
+		"vite": "^8.0.7",
+		"vitest": "^4.1.8"
+	},
+	"dependencies": {
+		"sass-embedded": "^1.100.0"
+	}
+}

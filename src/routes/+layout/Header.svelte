@@ -1,0 +1,16 @@
+<script lang="ts">
+  import AccountIcon from "$lib/icons/Account.svelte"
+</script>
+
+<header>
+  <AccountIcon />
+</header>
+
+<style lang="scss">
+  @use "$lib/scss/mixins/bg";
+
+  header {
+    padding: 12px;
+    @include bg.navigation;
+  }
+</style>
