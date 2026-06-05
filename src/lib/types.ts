@@ -1,3 +1,5 @@
+import type {SvelteHTMLElements} from "svelte/elements"
+
 export type Group = {
   slug: string
   name: string
@@ -18,4 +20,16 @@ export type Music = {
 export type Genre = {
   id: number
   name: string
+}
+
+export type MusicEvent = {
+  title: string
+  slug: string
+  imgSrc: SvelteHTMLElements["img"]["src"]
+  genres: Array<Genre>,
+  address: {
+    name: string,
+    coords: [number, number]
+  }
+  date: Date
 }
