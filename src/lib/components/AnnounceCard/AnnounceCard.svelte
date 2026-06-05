@@ -1,4 +1,6 @@
 <script lang="ts" module>
+  import {scale} from "svelte/transition"
+
   import type {SvelteHTMLElements} from "svelte/elements"
   import type {MusicEvent} from "$lib/types"
 
@@ -10,11 +12,16 @@
     address: MusicEvent['address']['coords']
     date: MusicEvent['date']
     loading?: SvelteHTMLElements["img"]["loading"],
+    announcePage: boolean
   }
 </script>
 <script lang="ts">
   import Tag from "$lib/components/Tag.svelte"
   import GenreTag from "$lib/components/GenreTag.svelte"
+
+  const dateFormatterForURL = new Intl.DateTimeFormat("ru-RU", {
+    dateStyle: "short"
+  })
 
   const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
     day: "numeric",
@@ -25,13 +32,17 @@
   })
 
   let {
+    slug,
     title,
     imgSrc,
     genres,
     address,
     date,
+    announcePage = false,
     loading = 'lazy'
   }: Props = $props()
+
+  const href = $derived(`/announcements/${dateFormatterForURL.format(date).replaceAll('.', '-')}/${slug}`)
 </script>
 
 <svelte:head>
@@ -40,34 +51,47 @@
   {/if}
 </svelte:head>
 
-<article class="announce-card">
+<article class="announce-card" class:announce-page={announcePage}>
+
   <!-- Left top -->
-  <div class="announce-type">
-    <Tag title="Концерт"/>
-  </div>
+  {#if !announcePage}
+    <div class="announce-type" transition:scale={{duration: 500}}>
+      <Tag title="Концерт"/>
+    </div>
+  {/if}
 
   <!-- Text -->
-  <div class="body">
-    <h3>{title}</h3>
-    <address>{address}</address>
-  </div>
+  {#if !announcePage}
+    <div class="body" transition:scale={{duration: 500}}>
+      <h3><a {href}>{title}</a></h3>
+      <address>{address}</address>
+    </div>
+  {/if}
 
   <!-- BG image -->
   <img src={imgSrc} alt="" {loading}>
 
+  <!-- Genres -->
   <div class="genres">
     {#each genres as genre}
       <GenreTag {genre}></GenreTag>
     {/each}
   </div>
 
-  <data value="">
-    <Tag title={dateFormatter.format(date)}></Tag>
-  </data>
+  <!-- Date -->
+  {#if !announcePage}
+    <time datetime={date.toISOString()} transition:scale={{duration: 500}}>
+      <Tag title={dateFormatter.format(date)}></Tag>
+    </time>
+  {/if}
 </article>
 
 <style lang="scss">
   .announce-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px;
     position: relative;
     aspect-ratio: 377 / 220;
 
@@ -80,6 +104,7 @@
       z-index: 0;
       width: 100%;
       border-radius: 8px;
+      transition: border-radius 300ms;
     }
 
     &::before {
@@ -90,9 +115,21 @@
       top: 0;
       right: 0;
       background: linear-gradient(70.43deg, rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0) 100%);
-
+      border-radius: 8px;
+      transition: opacity 300ms, border-radius 300ms;
       z-index: 1;
     }
+  }
+
+  .announce-card.announce-page {
+    img {
+      border-radius: 0;
+    }
+
+    &::before {
+      opacity: 0;
+    }
+
   }
 
   .announce-type {
@@ -106,15 +143,26 @@
   }
 
   .body {
-    position: absolute;
-    bottom: 16px;
-    left: 20px;
+    margin-bottom: 8px;
+    margin-left: 8px;
     z-index: 2;
 
     h3 {
       margin: 0;
       font-weight: 500;
       font-size: 1rem;
+      a {
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          top: 0;
+          right: 0;
+          z-index: 2;
+        }
+        color: inherit;
+      }
     }
 
     address {

@@ -1,8 +1,9 @@
 import type {SvelteHTMLElements} from "svelte/elements"
 
-export type Group = {
+export type Band = {
   slug: string
   name: string
+  miniImg: string
   genres: Array<Genre>
 }
 

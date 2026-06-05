@@ -1,8 +1,8 @@
 <script lang="ts" module>
-  import type {Group, Music} from "$lib/types"
+  import type {Band, Music} from "$lib/types"
 
   export type Props = {
-    group: Group;
+    group: Band;
     music: Array<Music>;
   }
 </script>

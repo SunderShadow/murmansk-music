@@ -1,28 +1,122 @@
 <script lang="ts">
+  import {slide, scale} from "svelte/transition"
   import Filter from "$lib/icons/Filter.svelte"
   import DateSelector from "$lib/components/DateSelector/DateSelector.svelte"
   import AnnounceCard from "$lib/components/AnnounceCard/AnnounceCard.svelte"
+  import {onNavigate} from "$app/navigation"
+  import {onMount, tick} from "svelte"
 
+  let selectedArticleI = $state(-1)
+  let shrinkForArticle = $state(false)
+
+  const dateFormatterForURL = new Intl.DateTimeFormat("ru-RU", {
+    dateStyle: "short"
+  })
+
+  let resolveNavigate
+  onNavigate(async (navigation) => {
+    for (let eventI in data.events) {
+      const event = data.events[Number(eventI)]
+      if (
+        event.slug === navigation.to.params.slug
+        && dateFormatterForURL.format(event.date).replaceAll('.', '-') === navigation.to.params.date
+      ) {
+        selectedArticleI = Number(eventI)
+        pinSelectedArticleToTop()
+
+        return new Promise(res => {
+          resolveNavigate = res
+        })
+      }
+    }
+  })
+
+  function onCardInPosition(e: TransitionEvent) {
+    if (e.propertyName === 'top') {
+      resolveNavigate()
+    }
+  }
   let {
     data
   } = $props()
+
+  let selectedCardRect = $state({
+    top: 0,
+    left: 0,
+    width: 0
+  })
+
+  let selectedCardVisible = $state(false)
+  let selectedCardTransformed = $state(false)
+  let HTMLEvents: Array<HTMLElement> = $state([])
+
+  function pinSelectedArticleToTop() {
+    const articleWrapper = HTMLEvents[selectedArticleI]
+    const articleWrapperRect = articleWrapper.getBoundingClientRect()
+
+    selectedCardRect.width = articleWrapperRect.width + 'px'
+    selectedCardRect.top = articleWrapperRect.top + 'px'
+    selectedCardRect.left = articleWrapperRect.left + 'px'
+
+    selectedCardVisible = true
+    tick().then(() => {
+      selectedCardTransformed = true
+      tick().then(() => {
+        shrinkForArticle = true
+        selectedCardRect.width = '100%'
+        selectedCardRect.top = '53px'
+        selectedCardRect.left = '0px'
+      })
+    })
+  }
+  onMount(() => {
+    console.log()
+  })
 </script>
 
-<main class="page-container">
-  <div class="filters">
-    <a id="filter">
-      <Filter />
-      Фильтры
-    </a>
+<main class:shrink-article={shrinkForArticle}>
+  {#if !shrinkForArticle}
+    <div class="filters" transition:slide={{duration: 500}}>
+      <div class="page-container">
+        <a id="filter">
+          <Filter />
+          Фильтры
+        </a>
 
-    <div class="date-wrapper">
-      <DateSelector />
+        <div class="date-wrapper">
+          <DateSelector />
+        </div>
+      </div>
     </div>
-  </div>
+  {/if}
 
-  <div class="announces">
-    {#each data.events as event, i}
-      <AnnounceCard {...event} loading={i > 3 ? 'lazy' : 'eager'}/>
+  {#if selectedCardVisible}
+    <div class="page-container" class:extend={shrinkForArticle}>
+        <div
+            style:top={selectedCardRect.top}
+            style:left={selectedCardRect.left}
+            style:width={selectedCardRect.width}
+            style:visibility={selectedCardVisible ? 'visible' : 'hidden'}
+            class="selected-card" ontransitionend={onCardInPosition}>
+          <AnnounceCard
+              {...data.events[selectedArticleI]}
+              announcePage={selectedCardTransformed}
+          />
+        </div>
+    </div>
+  {/if}
+
+  <div class="announces page-container">
+    {#each data.events as announce, i}
+      {#if !shrinkForArticle}
+        <div bind:this={HTMLEvents[i]} transition:scale={{duration: 500}}>
+          <AnnounceCard
+              {...announce}
+              announcePage={selectedArticleI === i}
+              loading={i > 3 ? 'lazy' : 'eager'}
+          />
+        </div>
+      {/if}
     {/each}
   </div>
 </main>
@@ -36,7 +130,7 @@
     gap: 25px;
     width: 100%;
 
-    margin-top: 16px;
+    transition: gap 500ms;
   }
 
   #filter {
@@ -59,7 +153,15 @@
         stroke: var(--color);
       }
     }
+  }
 
+  .selected-card {
+    position: fixed;
+    z-index: calc(var(--nav-z-index) - 1);
+    width: 100%;
+    top: 61px;
+    left: 0;
+    transition: top 500ms 500ms, left 500ms 500ms, width 500ms 500ms;
   }
 
   .date-wrapper {
@@ -68,15 +170,15 @@
   }
 
   .filters {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-    justify-content: space-between;
+    padding-bottom: 16px;
+    @include bg.section-start;
 
-  }
-
-  .page-container {
-    @include bg.section-start
+    > .page-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      justify-content: space-between;
+    }
   }
 </style>

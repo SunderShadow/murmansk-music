@@ -31,6 +31,9 @@
   @use "$lib/scss/mixins/bg";
 
   nav {
+    position: relative;
+    z-index: var(--nav-z-index);
+
     display: flex;
     padding: 6px 12px;
     gap: 8px;
