@@ -11,7 +11,7 @@
 
   <section>
     <h2>
-      <a href="">
+      <a href="/">
         <span>Новое</span> на этой неделе
         <ChevronRightIcon />
       </a>
@@ -23,7 +23,7 @@
 
   <section>
     <h2>
-      <a href="">
+      <a href="/">
         Подборка
         <ChevronRightIcon />
       </a>

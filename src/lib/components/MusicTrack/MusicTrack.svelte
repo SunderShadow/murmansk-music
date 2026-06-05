@@ -16,7 +16,7 @@
 </script>
 
 <article class="music-track" class:active>
-  <img src={previewImg}>
+  <img src={previewImg} alt="/no-track-preview.jpg">
   <div class="meta">
     <h3>{name}</h3>
     <div class="genres">

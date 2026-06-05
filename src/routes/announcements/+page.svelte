@@ -34,9 +34,6 @@
       }
     }
 
-    &.active {
-      --color: var(--color-accent);
-    }
   }
 
   .filters {
