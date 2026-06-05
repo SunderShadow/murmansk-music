@@ -8,6 +8,8 @@
   const datesBeforeCurrentCount = 10
   const datesAfterCurrentCount = 30
 
+  const fishEyeFromSelectedCount = 6
+  const fishEyeMinPercent = 0.5
   const dateSize = 30 //px
 
   const monthsText = [
@@ -77,10 +79,27 @@
     })
     slider.addEventListener('scroll', calcSelected)
     slider.addEventListener('scrollend', placeSelectedInCenter)
-
   }
 
+  function applyFishEye() {
+    const sliderWidth = slider.getBoundingClientRect().width
+    const sliderCenterX = slider.getBoundingClientRect().left + sliderWidth / 2
+    for (let i = -fishEyeFromSelectedCount; i < fishEyeFromSelectedCount; i++) {
+      if (currentDateI + i < 0 || currentDateI + i >= dates.length) {
+        continue
+      }
+      const HTMLDate = HTMLDates[currentDateI + i]
+      const HTMLDateRect = HTMLDate.getBoundingClientRect()
+      const HTMLDateCenterDistance = Math.abs(HTMLDateRect.left + HTMLDateRect.width / 2 - sliderCenterX)
+      const HTMLDateCenterDistancePercent = Math.abs(1 - HTMLDateCenterDistance / sliderWidth * 2)
+      const fishEyePercent = Math.max(fishEyeMinPercent, HTMLDateCenterDistancePercent)
+      HTMLDate.style.opacity = fishEyePercent.toString()
+      HTMLDate.style.transform = `scale(${fishEyePercent.toString()})`
+
+    }
+  }
   function calcSelected() {
+    applyFishEye()
     currentDateI = Math.floor(slider.scrollLeft / dateSize)
     if (currentDateI < 0) {
       currentDateI = 0
@@ -129,6 +148,7 @@
   .date-selector {
     width: 100%;
     position: relative;
+    height: 66px;
 
     &::before {
       content: '';
@@ -137,7 +157,6 @@
       top: calc(100% - 26px);
       width: 100%;
       height: 48px;
-      background: rgba(#fff, .1);
     }
   }
 
