@@ -10,7 +10,7 @@
 
   const fishEyeFromSelectedCount = 6
   const fishEyeMinPercent = 0.5
-  const dateSize = 30 //px
+  let dateSize = 30 //px
 
   const monthsText = [
     'Январь',
@@ -40,44 +40,45 @@
 
   let HTMLDates: NodeListOf<HTMLElement> = $state([])
 
-  let tmpDate = new Date()
-  tmpDate.setTime(selectedDate.getTime())
-  tmpDate.setDate(tmpDate.getDate() - datesBeforeCurrentCount)
+  //>> Fill dates section
+    let tmpDate = new Date()
+    tmpDate.setTime(selectedDate.getTime())
+    tmpDate.setDate(tmpDate.getDate() - datesBeforeCurrentCount)
 
-  let monthDates: MonthDates = {
-    month: tmpDate.getMonth(),
-    dates: []
-  }
-
-  // Fill dates
-  for (let i = -datesBeforeCurrentCount; i < datesAfterCurrentCount; i++) {
-    const nDate = new Date()
-    nDate.setTime(selectedDate.getTime())
-    nDate.setDate(nDate.getDate() + i)
-
-    if (
-      monthDates.month < nDate.getMonth()
-      || monthDates.month == 12 && nDate.getMonth() == 1
-    ) {
-      months.push(monthDates)
-      monthDates = {
-        month: nDate.getMonth(),
-        dates: []
-      }
+    let monthDates: MonthDates = {
+      month: tmpDate.getMonth(),
+      dates: []
     }
-    dates.push(nDate)
-    monthDates.dates.push(nDate)
-  }
-  months.push(monthDates)
+
+    for (let i = -datesBeforeCurrentCount; i < datesAfterCurrentCount; i++) {
+      const nDate = new Date()
+      nDate.setTime(selectedDate.getTime())
+      nDate.setDate(nDate.getDate() + i)
+
+      if (
+        monthDates.month < nDate.getMonth()
+        || monthDates.month == 12 && nDate.getMonth() == 1
+      ) {
+        months.push(monthDates)
+        monthDates = {
+          month: nDate.getMonth(),
+          dates: []
+        }
+      }
+      dates.push(nDate)
+      monthDates.dates.push(nDate)
+    }
+    months.push(monthDates)
+  //>> Fill dates section
 
   function placeSelectedInCenter() {
-    slider.removeEventListener('scroll', calcSelected)
+    slider.removeEventListener('scroll', onScroll)
     slider.removeEventListener('scrollend', placeSelectedInCenter)
     slider.scrollTo({
       left: currentDateI * dateSize + dateSize / 2,
       behavior: 'smooth'
     })
-    slider.addEventListener('scroll', calcSelected)
+    slider.addEventListener('scroll', onScroll)
     slider.addEventListener('scrollend', placeSelectedInCenter)
   }
 
@@ -98,8 +99,14 @@
 
     }
   }
+
+  function makeSelectionVibration() {
+    if (navigator.vibrate && navigator.userActivation.hasBeenActive) {
+      navigator.vibrate(10)
+    }
+  }
+
   function calcSelected() {
-    applyFishEye()
     currentDateI = Math.floor(slider.scrollLeft / dateSize)
     if (currentDateI < 0) {
       currentDateI = 0
@@ -108,20 +115,29 @@
       currentDateI = dates.length - 1
     }
 
-    selectedDate.setTime(dates[currentDateI].getTime())
+    if (selectedDate.getTime() !== dates[currentDateI].getTime()) {
+      makeSelectionVibration()
+      selectedDate.setTime(dates[currentDateI].getTime())
+    }
   }
 
+  function onScroll() {
+    calcSelected()
+    applyFishEye()
+  }
   onMount(() => {
     HTMLDates = slider.querySelectorAll('.date')
     placeSelectedInCenter()
+    dateSize = HTMLDates[0].clientWidth
     slider.scrollTo({
       left: currentDateI * dateSize + dateSize / 2,
     })
+    slider.style.removeProperty('visibility')
   })
 </script>
 
 <div class="date-selector">
-  <div class="slider" bind:this={slider}>
+  <div class="slider" bind:this={slider} style="visibility: hidden">
     <div class="tape" bind:this={tape}>
       {#each months as v, i}
         <div id="month-{v.month}" class="month" class:selected={v.month === selectedDate.getMonth()}>
