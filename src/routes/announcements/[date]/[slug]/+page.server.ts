@@ -1,5 +1,6 @@
-export function load() {
+export function load(e) {
   return {
+    entranceAnimation: e.request.headers.get('referer')?.endsWith('/announcements') ?? false,
     event: {
       slug: 'volna-roka-1',
       title: 'Волна рока',

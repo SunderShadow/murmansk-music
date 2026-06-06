@@ -129,7 +129,6 @@
     &::before {
       opacity: 0;
     }
-
   }
 
   .announce-type {
