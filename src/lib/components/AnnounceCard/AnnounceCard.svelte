@@ -183,7 +183,7 @@
     z-index: 2;
   }
 
-  data {
+  time {
     --tag-background-color: var(--color-accent);
     --tag-liquid-glass: 1;
 
