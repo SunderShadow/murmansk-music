@@ -3,11 +3,15 @@
 </script>
 
 <header>
-  <AccountIcon />
+  <a href="/user" class="active"><AccountIcon /></a>
 </header>
 
 <style lang="scss">
   @use "$lib/scss/mixins/bg";
+
+  a.active {
+    color: var(--color-accent);
+  }
 
   header {
     position: relative;
