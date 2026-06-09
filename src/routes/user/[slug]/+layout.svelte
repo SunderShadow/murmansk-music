@@ -42,18 +42,23 @@
   let userInfoHTML: HTMLElement = $state()
   let userInfoMinify = $state(false)
 
+  let userIconMinifyPercent = $state(0)
   afterNavigate(() => {
     for (let link of links) {
       link.active = checkIsLinkActive(link.relHref)
     }
   })
+  $inspect(userIconMinifyPercent)
+
+  function calcUserIconMinifyPercent() {
+    const userInfoScrollTop = (userInfoHTML?.getBoundingClientRect()?.top ?? 0)
+    userIconMinifyPercent = Math.max(53 / userInfoScrollTop, 0.5) * 2 - 1
+  }
+
   onMount(() => {
+    calcUserIconMinifyPercent()
     document.getElementById('main-view').addEventListener('scroll', e => {
-      if (userInfoMinifyTopOffset >= userInfoHTML.getBoundingClientRect().top) {
-        userInfoMinify = true
-      } else {
-        userInfoMinify = false
-      }
+      calcUserIconMinifyPercent()
     })
   })
 </script>
@@ -68,10 +73,10 @@
   </div>
 </header>
 
-<div class="user-info" class:minified={userInfoMinify} bind:this={userInfoHTML}>
+<div class="user-info" style:--minify-percent={userIconMinifyPercent} class:minified={userInfoMinify} bind:this={userInfoHTML}>
   <img id="user-icon" src="/test-data/user-icon.png" alt="">
   <div class="page-container">
-    <h1>Александр Шведов</h1>
+    <h1>Шведов Александр Николаевич</h1>
     <div class="genres">
       <data>Metalcore</data>
       <data>Metal</data>
@@ -90,25 +95,25 @@
 <style lang="scss">
   @use "$lib/scss/mixins/bg";
 
-  img {
-    width: 100%;
-    aspect-ratio: 393 / 207;
-  }
-
   .thumbnails {
-    position: relative;
+    img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 393 / 207;
+    }
   }
 
   #user-icon {
     position: absolute;
-    top: 0;
-    left: 20px;
+    top: calc(0 + 10px * var(--minify-percent));
+    left: var(--user-icon-left, 20px);
 
-    transform: translateY(-50%);
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
+    transform: translateY(calc(-50% + 50% * var(--minify-percent)));
+    width: var(--user-icon-size, 100px);
+    height: var(--user-icon-size, 100px);
     z-index: calc(var(--nav-z-index) + 1);
+
+    object-fit: cover;
   }
 
   h1 {
@@ -117,8 +122,10 @@
   }
 
   .user-info {
+    --user-icon-size: calc(100px - 30px * var(--minify-percent));
+    --user-icon-left: 20px;
     position: sticky;
-    top: -1px;
+    top: 0;
 
     padding-bottom: 8px;
     margin-bottom: 8px;
@@ -128,21 +135,21 @@
     @include bg.section-start;
     z-index: 10;
 
-    &.minified {
-      width: 100%;
+    h1 {
+      width: calc(100% - var(--user-icon-left) - 100px);
+      margin-left: auto;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
       left: 0;
+      bottom: 0;
+      right: 0;
+      background: red;
+      z-index: -1;
+      opacity: calc(1 * var(--minify-percent));
       @include bg.navigation;
-
-      nav {
-      }
-
-      #user-icon {
-        top: 10px;
-
-        width: 70px;
-        height: 70px;
-        transform: translateY(0);
-      }
     }
   }
 
@@ -164,7 +171,7 @@
   nav {
     display: flex;
     gap: 8px;
-    margin-top: 28px;
+    margin-top: 16px;
     justify-content: center;
     font-size: 12px;
     font-weight: 500;

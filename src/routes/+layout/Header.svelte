@@ -1,16 +1,17 @@
 <script lang="ts">
   import AccountIcon from "$lib/icons/Account.svelte"
+  import {page} from "$app/state"
 </script>
 
 <header>
-  <a href="/user" class="active"><AccountIcon /></a>
+  <a href="/user/alexandr" class:active={page.url.pathname.includes('/user/alexandr')}><AccountIcon /></a>
 </header>
 
 <style lang="scss">
   @use "$lib/scss/mixins/bg";
 
-  a.active {
-    color: var(--color-accent);
+  a.active :global svg *[stroke] {
+    stroke: var(--color-accent);
   }
 
   header {
