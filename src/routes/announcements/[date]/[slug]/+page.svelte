@@ -8,7 +8,6 @@
 
   import {fade} from "svelte/transition"
   import {onMount} from "svelte"
-  import {afterNavigate} from "$app/navigation"
 
   let {
     data
@@ -23,12 +22,16 @@
   })
 
   let bodyVisible = $state(!data.entranceAnimation)
-  onMount(() => {
+
+  function animateBody() {
     if (data.entranceAnimation) {
       setTimeout(() => {
         bodyVisible = true
       }, 200)
     }
+  }
+  onMount(() => {
+    animateBody()
   })
 
 </script>

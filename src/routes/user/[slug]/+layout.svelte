@@ -2,6 +2,7 @@
   import {page} from "$app/state"
   import {afterNavigate} from "$app/navigation"
   import {onMount} from "svelte"
+  import {setUserLayoutContext} from "./context"
 
   const links = $state([
     {
@@ -48,11 +49,19 @@
       link.active = checkIsLinkActive(link.relHref)
     }
   })
-  $inspect(userIconMinifyPercent)
+
+
+  let hidden = $state(false)
+
+  setUserLayoutContext({
+    hide() {
+      hidden = true
+    }
+  })
 
   function calcUserIconMinifyPercent() {
     const userInfoScrollTop = (userInfoHTML?.getBoundingClientRect()?.top ?? 0)
-    userIconMinifyPercent = Math.max(53 / userInfoScrollTop, 0.5) * 2 - 1
+    userIconMinifyPercent = Math.max(userInfoMinifyTopOffset / userInfoScrollTop, 0.5) * 2 - 1
   }
 
   onMount(() => {
@@ -67,33 +76,47 @@
   <title>Александр Шведов</title>
 </svelte:head>
 
-<header>
-  <div class="thumbnails">
-    <img src="/test-data/user-thumb.png" alt="">
-  </div>
-</header>
-
-<div class="user-info" style:--minify-percent={userIconMinifyPercent} class:minified={userInfoMinify} bind:this={userInfoHTML}>
-  <img id="user-icon" src="/test-data/user-icon.png" alt="">
-  <div class="page-container">
-    <h1>Шведов Александр Николаевич</h1>
-    <div class="genres">
-      <data>Metalcore</data>
-      <data>Metal</data>
-      <data>Indie</data>
+<div id="user-page">
+  <header class:hidden>
+    <div class="thumbnails">
+      <img src="/test-data/user-thumb.png" alt="">
     </div>
-    <nav>
-      {#each links as link}
-        <a href="{getFullPath(link.relHref)}" class:active={link.active}>{link.title}</a>
-      {/each}
-    </nav>
-  </div>
-</div>
+  </header>
 
-{@render children()}
+  <div class="user-info" class:hidden style:--minify-percent={userIconMinifyPercent} class:minified={userInfoMinify} bind:this={userInfoHTML}>
+    <img id="user-icon" src="/test-data/user-icon.png" alt="">
+    <div class="page-container">
+      <h1>Шведов Александр Николаевич</h1>
+      <div class="genres">
+        <data>Metalcore</data>
+        <data>Metal</data>
+        <data>Indie</data>
+      </div>
+      <nav>
+        {#each links as link}
+          <a href="{getFullPath(link.relHref)}" class:active={link.active}>{link.title}</a>
+        {/each}
+      </nav>
+    </div>
+  </div>
+
+  {@render children()}
+</div>
 
 <style lang="scss">
   @use "$lib/scss/mixins/bg";
+
+  #user-page {
+    --announce-card-z-index: calc(var(--nav-z-index) - 2);
+    --user-info-z-index: calc(var(--nav-z-index) - 2);
+  }
+
+  .user-info.hidden,
+  header.hidden {
+    opacity: 0;
+
+    transition: opacity 500ms;
+  }
 
   .thumbnails {
     img {
@@ -131,9 +154,9 @@
     margin-bottom: 8px;
 
     text-align: right;
+    z-index: calc(var(--user-info-z-index) + var(--minify-percent));
 
     @include bg.section-start;
-    z-index: 10;
 
     h1 {
       width: calc(100% - var(--user-icon-left) - 100px);

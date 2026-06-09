@@ -11,8 +11,9 @@
     genres: MusicEvent['genres']
     address: MusicEvent['address']['coords']
     date: MusicEvent['date']
-    loading?: SvelteHTMLElements["img"]["loading"],
-    announcePage: boolean
+    loading?: SvelteHTMLElements["img"]["loading"]
+    onClick: (e: Event) => void
+    announcePage?: boolean
   }
 </script>
 <script lang="ts">
@@ -39,6 +40,7 @@
     address,
     date,
     announcePage = false,
+    onClick,
     loading = 'lazy'
   }: Props = $props()
 
@@ -63,7 +65,7 @@
   <!-- Text -->
   {#if !announcePage}
     <div class="body" transition:scale={{duration: 500}}>
-      <h3><a {href}>{title}</a></h3>
+      <h3><a onclick={onClick} {href}>{title}</a></h3>
       <address>{address}</address>
     </div>
   {/if}
