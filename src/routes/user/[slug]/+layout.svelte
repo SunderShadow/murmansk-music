@@ -100,7 +100,9 @@
     </div>
   </div>
 
-  {@render children()}
+  <div>
+    {@render children()}
+  </div>
 </div>
 
 <style lang="scss">
