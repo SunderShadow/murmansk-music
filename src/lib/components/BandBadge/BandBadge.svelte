@@ -14,7 +14,7 @@
 <article>
   <img src={miniImg} alt="">
   <div>
-    <h3><a href="/bands/">{name}</a></h3>
+    <h3><a href="/bands/some-slug">{name}</a></h3>
     <div class="genres">
       {#each genres as genre, i}
         {#if i != 0}
@@ -28,8 +28,8 @@
 
 <style lang="scss">
   img {
-    width: 40px;
-    height: 40px;
+    width: var(--band-badge-img-size, 40px);
+    height: var(--band-badge-img-size, 40px);
   }
 
   article {
@@ -40,7 +40,7 @@
   }
 
   h3 {
-    font-size: 16px;
+    font-size: 1em;
     font-weight: 500;
     margin: 0;
     a::before {

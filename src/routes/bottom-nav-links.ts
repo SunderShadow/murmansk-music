@@ -26,9 +26,9 @@ export default [
   //   name: 'Подкасты',
   //   href: '/podcasts'
   // },
-  // {
-  //   icon: GuitarIcon,
-  //   name: 'Группы',
-  //   href: '/groups'
-  // },
+  {
+    icon: GuitarIcon,
+    name: 'Группы',
+    href: '/bands'
+  },
 ] as Array<BottomNavLink>

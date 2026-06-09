@@ -16,7 +16,7 @@
 
 <div class="group_music">
   <div class="group">
-    <h3><a href="/groups/{group.slug}">{group.name}</a></h3>
+    <h3><a href="/src/routes/bands/{group.slug}">{group.name}</a></h3>
     <div class="genres">
       {#each group.genres as genre}
         <span>{genre.name}</span>
