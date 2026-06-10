@@ -59,6 +59,20 @@
         monthDates.month < nDate.getMonth()
         || monthDates.month == 12 && nDate.getMonth() == 1
       ) {
+
+        // Make +2 day for month where dates.length < 3
+        // Because of display flex sets width of container > than 1 day size
+        if (monthDates.dates.length < 3) {
+          const nDate1 = new Date()
+          const nDate2 = new Date()
+
+          nDate2.setDate(monthDates.dates[0].getDate() - 1)
+          nDate1.setDate(nDate2.getDate() - 1)
+
+          dates.unshift(nDate1, nDate2)
+          monthDates.dates.unshift(nDate1, nDate2)
+        }
+
         months.push(monthDates)
         monthDates = {
           month: nDate.getMonth(),
